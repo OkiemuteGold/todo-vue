@@ -5,7 +5,7 @@
         <div>
             <input
                 type="text"
-                placeholder="What will you do today?"
+                placeholder="What do you want to do?"
                 v-model="title"
                 @keyup.enter="addTodo"
             />
@@ -13,16 +13,19 @@
             <button @click="addTodo" :disabled="!title">Add Todo</button>
         </div>
 
-        <p class="error" v-if="!title">You have not entered a todo!</p>
+        <p class="error" v-if="!title">{{ error }}</p>
 
         <div class="todos">
             <h2>Todos</h2>
             <ul>
                 <li v-for="(todo, index) in todos" :key="index">
-                    {{ todo }}
-                    <span class="delete-todo" @click="deleteTodo(index)"
-                        >x</span
-                    >
+                    <p>
+                        <!-- <span>+</span> -->
+                        {{ todo }}
+                    </p>
+                    <span class="delete-todo" @click="deleteTodo(index)">
+                        x
+                    </span>
                 </li>
             </ul>
         </div>
@@ -36,11 +39,11 @@ export default {
         return {
             title: "",
             todos: [
-                "Finish course",
-                "Exercise for 20 minutes",
-                "Read a book",
-                "Take a walk",
+                // "Finish course",
+                // "Exercise for 20 minutes",
+                // "Read a book",
             ],
+            error: "Please enter todo!",
         };
     },
     methods: {
@@ -49,6 +52,7 @@ export default {
                 this.todos.push(this.title);
                 this.title = "";
             }
+            this.saveTodos();
         },
         deleteTodo(index) {
             // using javascript
@@ -56,7 +60,17 @@ export default {
 
             // using vue delete helper
             this.$delete(this.todos, index);
+            this.saveTodos();
         },
+        saveTodos() {
+            localStorage.setItem("Todos", JSON.stringify(this.todos));
+        },
+        getTodos() {
+            this.todos = JSON.parse(localStorage.getItem("Todos"));
+        },
+    },
+    mounted() {
+        this.getTodos();
     },
 };
 </script>
@@ -68,38 +82,48 @@ h1 {
 }
 
 input {
-    padding: 7px 12px;
+    min-width: 170px;
+    padding: 7px 10px;
     border-radius: 3px;
-    border: 2px solid #83b9a1;
+    border: 2px solid #4bc58e;
     outline: none;
     appearance: none;
     box-shadow: none;
+    font-family: sans-serif;
 }
 
 button {
-    padding: 7px 12px;
+    padding: 7px 10px;
     border-radius: 3px;
-    margin-left: 8px;
+    margin-left: 5px;
     outline: none;
     appearance: none;
-    border: 2px solid #42b983;
-    background: #42b983;
+    border: 2px solid #38a775;
+    background: #38a775;
     color: #fff;
     transition: 0.4s ease;
 
     &:active,
     &:focus,
     &:hover {
-        background: #25855a;
-        border-color: #25855a;
+        background: #2c8f62;
+        border-color: #2c8f62;
         cursor: pointer;
+    }
+
+    &:disabled {
+        border: 2px solid #4bc58e;
+        background: #4bc58e;
+    }
+    &:disabled:hover {
+        cursor: unset;
     }
 }
 
 .error {
-    color: red;
-    font-style: italic;
-    font-size: 14px;
+    color: rgb(207, 27, 27);
+    // font-style: italic;
+    font-size: 13px;
     margin-top: 15px;
 }
 
@@ -124,6 +148,16 @@ button {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        // & p span {
+        //     background: #f1f1f1;
+        //     border-radius: 3px;
+        //     padding: 1px 5px;
+
+        //     &:hover {
+        //         cursor: pointer;
+        //     }
+        // }
     }
 }
 
